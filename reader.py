@@ -9,24 +9,6 @@ from requests import post
 from configuration import edf_file, patient_id , exam_id, headset_uuid, http_url
 import time
 
-# Read edf file
-file = edf_file
-raw = mne.io.read_raw_edf(file)
-
-# read sample rate in file
-sfreq = int(raw.info['sfreq'])
-exam_time = datetime.datetime.utcfromtimestamp(raw.info['meas_date'][0])
-print('The exam time:', exam_time)
-
-# read channels in edf file
-channel_name = raw.ch_names
-n_channel = raw.info['nchan']
-
-# find duration of exam
-n_times = raw.n_times
-duration = int(n_times / sfreq)  # in second
-print('The exam duration:', duration, 'Sec')
-
 
 # define data reader function to read time by time from edf file and send to HTTP server
 def data_reader(t_time):
@@ -48,13 +30,33 @@ def data_reader(t_time):
     return res
 
 
-print('[*] Start to stream data ...')
-# Run a loop to tail edf file in time , every one second !
-for i in range(duration):
-    res = data_reader(t_time=i)
-    if res.status_code is 201:
-        print('IN-T:' + str(i), 'Data send.')
-    else:
-        print('IN-T:' + str(i), 'Error on sending data')
-    time.sleep(1)
+if __name__ == '__main__':
+    # Read edf file
+    file = edf_file
+    raw = mne.io.read_raw_edf(file)
+
+    # read sample rate in file
+    sfreq = int(raw.info['sfreq'])
+    exam_time = datetime.datetime.utcfromtimestamp(raw.info['meas_date'][0])
+    print('The exam time:', exam_time)
+
+    # read channels in edf file
+    channel_name = raw.ch_names
+    n_channel = raw.info['nchan']
+
+    # find duration of exam
+    n_times = raw.n_times
+    duration = int(n_times / sfreq)  # in second
+    print('The exam duration:', duration, 'Sec')
+
+    print('[*] Start to stream data ...')
+    # Run a loop to tail edf file in time , every one second !
+
+    for i in range(duration):
+        res = data_reader(t_time=i)
+        if res.status_code is 201:
+            print('IN-T:' + str(i), 'Data send.')
+        else:
+            print('IN-T:' + str(i), 'Error on sending data')
+        time.sleep(1)
 

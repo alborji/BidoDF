@@ -1,9 +1,9 @@
-#BidoDF
+# BidoDF
 
-##### A `parser` for EDF and `stream` of EDF data across a network or internet
+   A `parser` for EDF and `stream` of EDF data across a network or internet
 
 ---
-###Overview
+### Overview
 We needed a small tools to pars lard EDF tools and stream it's data via network base on TCP/IP. So, I write this codes 
 to emulate a EEG headset. 
  - Read data from EDF file (instead of Headset probes)
